@@ -11,4 +11,5 @@ env.hosts = ["woody@vlionthu.com:9022"]
 def deploy():
     remote_home = "/home/woody/tdma_cmd_util"
     local_home = os.path.dirname(__file__)
-    rsync_project(local_dir=local_home, remote_dir=remote_home)
+    exclude_dir = [".git", ".vscode", "__pycache__"]
+    rsync_project(local_dir=local_home, remote_dir=remote_home, exclude=exclude_dir)
