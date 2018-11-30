@@ -1,11 +1,13 @@
 #include "tdma_mock.h"
 
+// struct msghdr msg;
+
 int main() {
     struct sockaddr_nl src_addr, dest_addr;
     struct nlmsghdr *nlh = NULL;
     struct iovec iov;
     int sock_fd;
-    struct msghdr msg;
+    struct msghdr* msg;
     int payload_size;
     struct nlattr tlv;
     struct tdma_nl_cmd_route cmd;
@@ -27,7 +29,8 @@ int main() {
     dest_addr.nl_pid = 0;
     dest_addr.nl_groups = 0;
 
-    payload_size = sizeof(struct nlattr) + sizeof(struct tdma_nl_cmd_route);
+    // payload_size = sizeof(struct nlattr) + sizeof(struct tdma_nl_cmd_route);
+    payload_size = 1000;
     nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(payload_size));
 
     nlh->nlmsg_len = NLMSG_SPACE(payload_size);
@@ -42,13 +45,20 @@ int main() {
 
     iov.iov_base = (void *)nlh;
     iov.iov_len = nlh->nlmsg_len;
-    msg.msg_name = (void *) &dest_addr;
-    msg.msg_namelen = sizeof(dest_addr);
-    msg.msg_iov = &iov;
-    msg.msg_iovlen = 1;
+    msg = malloc(sizeof(struct msghdr));
+    msg->msg_name = (void *) &dest_addr;
+    msg->msg_namelen = sizeof(dest_addr);
+    msg->msg_iov = &iov;
+    msg->msg_iovlen = 1;
 
     printf("Sending message to kernel: message size: %lu\n", iov.iov_len);
-    sendmsg(sock_fd, &msg, 0);
-    printf("Exit");
+    printf("my pid: %d\n", getpid());
+    sendmsg(sock_fd, msg, 0);
+
+    printf("wait\n");
+    recvmsg(sock_fd, msg, 0);
+    printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
     close(sock_fd);
+    free(nlh);
+    free(msg);
 }
