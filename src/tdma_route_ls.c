@@ -1,6 +1,8 @@
+/**
+ * 这个文件会产生一个模拟的tdma route ls命令发往内核
+ */
 #include "tdma_mock.h"
 
-// struct msghdr msg;
 
 int main() {
     struct sockaddr_nl src_addr, dest_addr;
