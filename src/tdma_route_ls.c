@@ -38,7 +38,7 @@ int main() {
     nlh->nlmsg_flags = 0;
 
     tlv.nla_len = sizeof(struct tdma_nl_cmd_route);
-    tlv.nla_type = TDMA_NL_CMD_ROUTE << 8 & TDMA_NL_CMD_ROUTE_LS;
+    tlv.nla_type = (TDMA_NL_CMD_ROUTE << 8) | TDMA_NL_CMD_ROUTE_LS;
     memset(&cmd, 0, sizeof(cmd));
     memcpy(NLMSG_DATA(nlh), &tlv, sizeof(tlv));
     memcpy(NLMSG_DATA(nlh) + sizeof(tlv), &cmd, sizeof(cmd));

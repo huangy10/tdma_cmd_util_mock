@@ -5,7 +5,53 @@
 
 #define NETLINK_TDMA    31
 
+#define TDMA_NL_CMD_TYPE(x) (x >> 8)
+#define TDMA_NL_CMD_SUBTYPE(x) (x & 0xff)
+
+// types
+#define TDMA_NL_CMD_ROUTE   0x01
+#define TDMA_NL_CMD_ICMP    0x02
+#define TDMA_NL_CMD_STATS   0x03
+#define TDMA_NL_CMD_HLOG    0x04
+
+// subtypesNETLINK_TDMA
+#define TDMA_NL_CMD_ROUTE_ADD   0x01
+#define TDMA_NL_CMD_ROUTE_DEL   0x02
+#define TDMA_NL_CMD_ROUTE_LS    0x03
+#define TDMA_NL_CMD_ROUTE_RESET 0x04
+
+struct tdma_nl_cmd_route {
+    u16 flags;  // bool型的flag放在这里
+    u8  src_node; // 源节点
+    u8  dst_node; // 目标节点
+
+    u16 weights;
+    u16 delay;
+};
+// 定义route命令的flag的mask
+#define TDMA_NL_CMD_ROUTE_MASK_VERBOSE  0x01    // --verbose
+#define TDMA_NL_CMD_ROUTE_MASK_SYMM     0x02    // --symm -s (对称链接)
+#define TDMA_NL_CMD_ROUTE_MASK_WATCH    0x04    // --watch
+
 struct sock *nl_sk = NULL;
+
+static void parse_cmd(struct nlmsghdr *nlh) {
+    struct nlattr *attr;
+    attr = (struct nlattr*)nlmsg_data(nlh);
+
+    switch (TDMA_NL_CMD_TYPE(attr->nla_type)) {
+        case TDMA_NL_CMD_ROUTE:
+            if (TDMA_NL_CMD_SUBTYPE(attr->nla_type) == TDMA_NL_CMD_ROUTE_LS) {
+                printk(KERN_INFO "tdma route ls\n");
+                return;
+            }
+            break;
+        default:
+            break;
+    }
+    printk(KERN_ALERT "Undefined command: %u\n", attr->nla_type);
+    printk(KERN_ALERT "TLV lenght: %u\n", attr->nla_len);
+}
 
 static void simple_msg_input(struct sk_buff *skb) {
     struct nlmsghdr *nlh;
@@ -23,6 +69,7 @@ static void simple_msg_input(struct sk_buff *skb) {
     nlh = (struct nlmsghdr *)skb->data;
     pid = nlh->nlmsg_pid;
     printk(KERN_INFO "Receive msg from %d\n", pid);
+    parse_cmd(nlh);
 
     skb_out = nlmsg_new(msg_size, 0);
     if (!skb_out) {
