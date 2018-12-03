@@ -47,3 +47,26 @@ struct tdma_nl_cmd_route {
 #define TDMA_NL_CMD_ROUTE_MASK_VERBOSE  0x01    // --verbose
 #define TDMA_NL_CMD_ROUTE_MASK_SYMM     0x02    // --symm -s (对称链接)
 #define TDMA_NL_CMD_ROUTE_MASK_WATCH    0x04    // --watch
+
+#define TDMA_NL_MAX_PAYLOAD 1000
+/**
+ * 
+ */
+struct tdma_nl_mock {
+    struct sockaddr_nl src_addr;
+    struct sockaddr_nl dst_addr;
+
+    struct iovec iov;
+    struct msghdr msg;
+
+    int sock_fd;
+    struct nlmsghdr *nlh;
+    struct nlattr *attr;
+    
+    void *buf;
+    void *recv_payload;
+};
+
+struct tdma_nl_mock* create_tdma_mock(int max_payload_size);
+void free_tdma_mock(struct tdma_nl_mock* mock);
+void memcpy_tdma_mock(struct tdma_nl_mock *mock, void* data, int length, int offset);
