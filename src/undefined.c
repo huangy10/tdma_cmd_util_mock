@@ -6,11 +6,6 @@ int main() {
         printf("Fail to create mock\n");
         return -1;
     }
-    printf("send msg\n");
-    sendmsg(mock->sock_fd, &mock->msg, 0);
-    printf("start to recv\n");
-    recvmsg(mock->sock_fd, &mock->msg, 0);
-    printf("Received message payload: %s\n", (char *)mock->recv_payload);
-    free_tdma_mock(mock);
+    sendmsg_tdma_mock(mock);
     return 0;
 }

@@ -70,3 +70,5 @@ struct tdma_nl_mock {
 struct tdma_nl_mock* create_tdma_mock(int max_payload_size);
 void free_tdma_mock(struct tdma_nl_mock* mock);
 void memcpy_tdma_mock(struct tdma_nl_mock *mock, void* data, int length, int offset);
+
+void sendmsg_tdma_mock(struct tdma_nl_mock *mock);
