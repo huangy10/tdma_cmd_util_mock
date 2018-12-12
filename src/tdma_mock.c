@@ -33,6 +33,8 @@ struct tdma_nl_mock* create_tdma_mock(int max_payload_size) {
 
     mock->iov.iov_base = (void *)mock->nlh;
     mock->iov.iov_len = mock->nlh->nlmsg_len;
+    
+    memset(&mock->msg, 0, sizeof(mock->msg));
     mock->msg.msg_name = (void *)&mock->dst_addr;
     mock->msg.msg_iov = &mock->iov;
     mock->msg.msg_iovlen = 1;
@@ -59,10 +61,13 @@ void memcpy_tdma_mock(
 }
 
 void sendmsg_tdma_mock(struct tdma_nl_mock *mock) {
+    ssize_t size;
     printf("send msg\n");
-    sendmsg(mock->sock_fd, &mock->msg, 0);
+    size = sendmsg(mock->sock_fd, &mock->msg, 0);
+    printf("send size %d\n", size);
     printf("start to recv\n");
-    recvmsg(mock->sock_fd, &mock->msg, 0);
+    size = recvmsg(mock->sock_fd, &mock->msg, 0);
     printf("Received message payload: %s\n", (char *)mock->recv_payload);
+    printf("Payload Size: %d\n", size);
     free_tdma_mock(mock);
 }
