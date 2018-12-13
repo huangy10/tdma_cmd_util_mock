@@ -12,11 +12,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 
+#define u64 unsigned long long
 #define u32 unsigned long 
 #define u16 unsigned short
 #define u8 unsigned char
+#define s32 long
+#define s16 short
+#define ETH_ALEN 6
+
+#define TDMA_NODE_COUNT 5
 
 #define NETLINK_TDMA    31
 
@@ -72,3 +79,31 @@ void free_tdma_mock(struct tdma_nl_mock* mock);
 void memcpy_tdma_mock(struct tdma_nl_mock *mock, void* data, int length, int offset);
 
 void sendmsg_tdma_mock(struct tdma_nl_mock *mock);
+
+struct tdma_node_info {
+    u8      id;
+    u16     nnode;                      // abbr for next-hop-node
+    u8      addr[ETH_ALEN];             // mac address
+    bool    is_known;
+    u8      ttl;                        // ttl 到0表路径断裂。
+    u8      credit;                     // 节点信息可信度，传递跳数过多的节点不可信
+    u8      pi_mac[ETH_ALEN];           // mac address of binded raspberry pi
+    s32     latitude;                   // 到赤道距离,m,百位以下表2位小数，正表北
+    s32     longitude;                  // 到本初子午线距离,m,百位以下表2位小数，正表东
+    s16     speed_EW;                   // 东西方向速度，正表东
+    s16     speed_NS;                   // 南北方向速度，正表北
+    u64     gps_info_time;              // gps写入位置时的网络时间
+};
+
+struct  tdma_link_info {
+    u32     score;      // 链接的打分
+    u32     distance;   // 链接的距离, 如果缺少距离数据，可以设置为0
+    bool    locked;     // 锁定score，禁止自动更新
+};
+
+struct tdma_nl_route_info {
+    int err;
+    int node_num;
+    struct tdma_link_info links[TDMA_NODE_COUNT][TDMA_NODE_COUNT];
+    struct tdma_node_info nodes[TDMA_NODE_COUNT];
+};
