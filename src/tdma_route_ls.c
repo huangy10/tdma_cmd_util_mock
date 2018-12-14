@@ -13,7 +13,7 @@ int main() {
     struct nlattr *ack_attr;
     struct tdma_nl_route_info *info;
 
-    int i;
+    int i, j;
 
     if (!mock) {
         printf("fail to create mock\n");
@@ -36,8 +36,10 @@ int main() {
     printf("err code: %d\n", info->err);
     printf("node num: %d\n", info->node_num);
     for (i = 0; i < info->node_num; i += 1) {
-        printf("%d: %u\n", i, info->links[i][i].score);
-        printf("%d: %u\n", i, info->links[i][0].score);
+        for (j = 0; j < info->node_num; j += 1) {
+            printf("%u, ", info->links[i][j].score);
+        }
+        printf("\n");
     }
 
     nlh = (struct nlmsghdr*)(mock->recv_payload + sizeof(struct tdma_nl_route_info));

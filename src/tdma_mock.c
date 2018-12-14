@@ -7,7 +7,7 @@ struct tdma_nl_mock* create_tdma_mock(int max_payload_size) {
     mock = (struct tdma_nl_mock*)malloc(sizeof(struct tdma_nl_mock));
     mock->sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_TDMA);
     if (mock->sock_fd < 0) {
-        printf("Fail to create sock!\n");
+        printf("Fail to create sock! %d\n", mock->sock_fd);
         goto mock_fail;
     }
     memset(&mock->src_addr, 0, sizeof(struct sockaddr_nl));
@@ -29,7 +29,7 @@ struct tdma_nl_mock* create_tdma_mock(int max_payload_size) {
     mock->attr = NLMSG_DATA(mock->nlh);
     mock->recv_payload = mock->attr;
     memcpy(mock->attr, &tlv, sizeof(struct nlattr));
-    mock->buf = mock->attr + sizeof(struct nlattr);
+    mock->buf = NLMSG_DATA(mock->nlh) + NLA_HDRLEN;
 
     mock->iov.iov_base = (void *)mock->nlh;
     mock->iov.iov_len = mock->nlh->nlmsg_len;

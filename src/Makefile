@@ -3,11 +3,13 @@
 objs := \
  	undefined.o \
 	tdma_mock.o \
-	tdma_route_ls.o
+	tdma_route_ls.o \
+	tdma_route_del.o
 
 undefined: $(objs)
 	# $(CC) -o undefined undefined.o tdma_mock.o
-	$(CC) -o tdma tdma_route_ls.o tdma_mock.o
+	$(CC) -o tdma_del tdma_route_del.o tdma_mock.o
+	$(CC) -o tdma_ls tdma_route_ls.o tdma_mock.o
 
 -include $(objs:.o=.d) 
 

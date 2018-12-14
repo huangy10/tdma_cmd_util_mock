@@ -25,7 +25,8 @@ endef
 
 define Package/tdma_cmd_util_mock/install
 	$(INSTALL_DIR) $(1)/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tdma $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tdma_ls $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tdma_del $(1)/bin/
 endef
 
 $(eval $(call BuildPackage,tdma_cmd_util_mock))
